@@ -7,7 +7,6 @@ app = Flask('')
 @app.route('/')
 def home(): return "U.S ARMY Bot Online!"
 def run_web():
-    # A Render által kiosztott portot olvassa be, alapértelmezetten a 8080-ast
     port = int(os.environ.get("PORT", 8080))
     app.run(host='0.0.0.0', port=port)
 def keep_alive(): Thread(target=run_web).start()
@@ -125,5 +124,4 @@ async def userinfo(interaction: discord.Interaction, tag: discord.Member = None)
     embed.add_field(name="ID", value=t.id).add_field(name="Regisztráció", value=t.created_at.strftime("%Y-%m-%d")).add_field(name="Csatlakozás", value=t.joined_at.strftime("%Y-%m-%d"))
     embed.set_thumbnail(url=t.avatar.url if t.avatar else t.default_avatar.url)
     await interaction.response.send_message(embed=embed)
-@bot.tree.error
-async def on_app_command_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+if BOT_TOKEN: bot.run(BOT_TOKEN)
