@@ -7,10 +7,6 @@ from flask import Flask
 app = Flask('')
 @app.route('/')
 def home(): return "U.S ARMY Bot Online!"
-def run_web():
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host='0.0.0.0', port=port)
-def keep_alive(): Thread(target=run_web).start()
 
 UDVOZLO_CSATORNA_ID = int(os.environ.get("UDVOZLO_CSATORNA_ID", 1575209536279552111))
 TAVOZO_CSATORNA_ID = int(os.environ.get("TAVOZO_CSATORNA_ID", 1575209584295944282))
@@ -123,23 +119,4 @@ async def timeout(interaction: discord.Interaction, tag: discord.Member, percek:
 async def clear(interaction: discord.Interaction, darab: int):
     if darab < 1: await interaction.response.send_message("⚠️ Minimum 1 üzenet!", ephemeral=True); return
     await interaction.response.defer(ephemeral=True); deleted = await interaction.channel.purge(limit=darab)
-    await interaction.followup.send(f"🗑️ Sikeresen törölve {len(deleted)} üzenet.", ephemeral=True)
-
-@bot.tree.command(name="ping", description="Késleltetés.")
-async def ping(interaction: discord.Interaction): await interaction.response.send_message(f"🏓 Pong! `{round(bot.latency * 1000)}ms`")
-
-@bot.tree.command(name="serverinfo", description="Szerverinfó.")
-async def serverinfo(interaction: discord.Interaction):
-    g = interaction.guild; embed = discord.Embed(title=f"🏰 {g.name}", color=discord.Color.gold())
-    embed.add_field(name="Tulajdonos", value=g.owner.mention).add_field(name="Tagok", value=g.member_count).add_field(name="Létrehozva", value=g.created_at.strftime("%Y-%m-%d"))
-    if g.icon: embed.set_thumbnail(url=g.icon.url)
-    await interaction.response.send_message(embed=embed)
-
-@bot.tree.command(name="userinfo", description="Tag információ.")
-async def userinfo(interaction: discord.Interaction, tag: discord.Member = None):
-    t = tag or interaction.user; embed = discord.Embed(title=f"👤 {t.name} adatai", color=t.color)
-    embed.add_field(name="ID", value=t.id).add_field(name="Regisztráció", value=t.created_at.strftime("%Y-%m-%d")).add_field(name="Csatlakozás", value=t.joined_at.strftime("%Y-%m-%d"))
-    embed.set_thumbnail(url=t.avatar.url if t.avatar else t.default_avatar.url)
-    await interaction.response.send_message(embed=embed)
-
-if BOT_TOKEN: bot.run(BOT_TOKEN)
+    await interaction.followup.send(f"🗑️ Sikeresen törölve {len(deleted)} üzenet.",
