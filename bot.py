@@ -112,7 +112,6 @@ async def on_ready():
     except Exception as e:
         print(f"❌ Szinkronizációs hiba: {e}")
 
-    # Frissített státusz az új névhez passzolva
     await bot.change_presence(activity=discord.Game(name="/help | U.S ARMY Szerver Bot"))
 
 # --- AUTOMATIKUS ÜDVÖZLŐ ÉS BÚCSÚZÓ RENDSZER ---
@@ -198,3 +197,5 @@ async def clear(interaction: discord.Interaction, darab: int):
 
 @bot.tree.command(name="ping", description="Bot válaszideje.")
 async def ping(interaction: discord.Interaction):
+    await interaction.response.send_message(f"🏓 Pong! `{round(bot.latency * 1000)}ms`")
+
