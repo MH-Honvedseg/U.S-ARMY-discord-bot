@@ -17,17 +17,18 @@ class TicketMegnyitasView(discord.ui.View):
     def __init__(self): super().__init__(timeout=None)
     @discord.ui.button(label="🎫 Ticket Nyitása", style=discord.ButtonStyle.green, custom_id="nyit_ticket")
     async def ticket_gomb(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer(ephemeral=True)
         guild = interaction.guild; user = interaction.user
         existing_channel = discord.utils.get(guild.channels, name=f"ticket-{user.name.lower()}")
         if existing_channel:
-            await interaction.response.send_message(f"⚠️ Már van nyitott ticketed: {existing_channel.mention}", ephemeral=True)
+            await interaction.followup.send(f"⚠️ Már van nyitott ticketed: {existing_channel.mention}", ephemeral=True)
             return
         overwrites = {guild.default_role: discord.PermissionOverwrite(read_messages=False), user: discord.PermissionOverwrite(read_messages=True, send_messages=True, attach_files=True, read_message_history=True), guild.me: discord.PermissionOverwrite(read_messages=True, send_messages=True, manage_channels=True)}
         kat = bot.get_channel(TICKET_KATEGORIA_ID) if TICKET_KATEGORIA_ID != 0 else None
         ticket_csatorna = await guild.create_text_channel(name=f"ticket-{user.name}", overwrites=overwrites, category=kat)
         embed = discord.Embed(title="🎫 Ticket Elindítva", description=f"Üdvözöllek {user.mention}! Kérlek írd le a problémádat.\n\nA lezárás gomb elküldi a mentést privátban, majd törli a csatornát.", color=discord.Color.blue())
         await ticket_csatorna.send(embed=embed, view=TicketLezarasView(user_id=user.id))
-        await interaction.response.send_message(f"✅ Ticket létrehozva: {ticket_csatorna.mention}", ephemeral=True)
+        await interaction.followup.send(f"✅ Ticket létrehozva: {ticket_csatorna.mention}", ephemeral=True)
 class TicketLezarasView(discord.ui.View):
     def __init__(self, user_id: int = None): super().__init__(timeout=None); self.user_id = user_id
     @discord.ui.button(label="🔒 Ticket Lezárása & Mentés", style=discord.ButtonStyle.red, custom_id="zar_ticket")
@@ -83,9 +84,10 @@ async def help_command(interaction: discord.Interaction):
 @bot.tree.command(name="ticketgen", description="Legenerálja a Ticket panelt.")
 @app_commands.checks.has_permissions(administrator=True)
 async def ticketgen(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)
     embed = discord.Embed(title="📩 Ügyfélszolgálat & Segítség", description="Kattints az alábbi gombra egy privát beszélgetés megnyitásához!", color=discord.Color.blue())
     await interaction.channel.send(embed=embed, view=TicketMegnyitasView())
-    await interaction.response.send_message("✅ Panel sikeresen elhelyezve!", ephemeral=True)
+    await interaction.followup.send("✅ Panel sikeresen elhelyezve!", ephemeral=True)
 @bot.tree.command(name="ban", description="Kitiltás.")
 @app_commands.checks.has_permissions(ban_members=True)
 async def ban(interaction: discord.Interaction, tag: discord.Member, indok: str = "Nincs megadva"):
@@ -123,6 +125,6 @@ async def userinfo(interaction: discord.Interaction, tag: discord.Member = None)
 async def on_app_command_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
     if isinstance(error, app_commands.errors.MissingPermissions): await interaction.response.send_message("❌ Nincs jogosultságod!", ephemeral=True)
 
-# IDE ÍRD BE A BOTOKENEDET A KÉT MACSKAKÖRÖM KÖZÉ!
+# IDE ILLESZD BE A BOTOKENEDET A KÉT MACSKAKÖRÖM KÖZÉ!
 keep_alive()
-bot.run("MTEzNDU2Nzg5MDEyMzQ1Njc4OQ.G_ABCDE.EzEgyMintaToken")
+bot.run("IDE_JÖN_A_TOKENED")
