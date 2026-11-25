@@ -11,6 +11,8 @@ def keep_alive(): Thread(target=run_web).start()
 UDVOZLO_CSATORNA_ID = int(os.environ.get("UDVOZLO_CSATORNA_ID", 1575209536279552111))
 TAVOZO_CSATORNA_ID = int(os.environ.get("TAVOZO_CSATORNA_ID", 1575209584295944282))
 TICKET_KATEGORIA_ID = int(os.environ.get("TICKET_KATEGORIA_ID", 1575207047421759719))
+# Elsőként a GitHub titkos tárolóból próbálja olvasni, ha ott nincs, akkor a Renderből
+BOT_TOKEN = os.environ.get("DISCORD_TOKEN") or os.environ.get("BOT_TOKEN")
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 class TicketMegnyitasView(discord.ui.View):
@@ -124,7 +126,4 @@ async def userinfo(interaction: discord.Interaction, tag: discord.Member = None)
 @bot.tree.error
 async def on_app_command_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
     if isinstance(error, app_commands.errors.MissingPermissions): await interaction.response.send_message("❌ Nincs jogosultságod!", ephemeral=True)
-
-# IDE ILLESZD BE A BOTOKENEDET A KÉT MACSKAKÖRÖM KÖZÉ!
-keep_alive()
-bot.run("IDE_JÖN_A_TOKENED")
+if BOT_TOKEN: bot.run(BOT_TOKEN)
