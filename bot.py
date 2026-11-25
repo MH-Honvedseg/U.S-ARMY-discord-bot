@@ -53,7 +53,7 @@ class TicketLezarasView(discord.ui.View):
         if target_user:
             try:
                 embed_dm = discord.Embed(title="🔒 Ticket Lezárva", description=f"A(z) **{guild.name}** szerveren lévő ticketed lezárult. Mellékelve találod a beszélgetés mentését.", color=discord.Color.orange())
-                await target_user.send(embed=embed_dm, file=transcript_file); dm_siker = True
+                await target_user.send(embed_dm, file=transcript_file); dm_siker = True
             except Exception: pass
         if dm_siker: await channel.send("💾 **Transcript sikeresen elküldve DM-ben!** Törlés 5 másodpercen belül...")
         else: await channel.send("⚠️ **Nem sikerült elküldeni privát üzenetben.** Törlés 5 másodpercen belül...")
