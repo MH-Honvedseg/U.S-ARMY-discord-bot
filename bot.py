@@ -11,7 +11,8 @@ def home(): return "U.S ARMY Bot Online!"
 UDVOZLO_CSATORNA_ID = int(os.environ.get("UDVOZLO_CSATORNA_ID", 1575209536279552111))
 TAVOZO_CSATORNA_ID = int(os.environ.get("TAVOZO_CSATORNA_ID", 1575209584295944282))
 TICKET_KATEGORIA_ID = int(os.environ.get("TICKET_KATEGORIA_ID", 1575207047421759719))
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
+if BOT_TOKEN: bot.run(BOT_TOKEN)
+
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
