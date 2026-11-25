@@ -8,23 +8,23 @@ app = Flask('')
 def home(): return "U.S ARMY Bot Online!"
 def run_web(): app.run(host='0.0.0.0', port=10000)
 def keep_alive(): Thread(target=run_web).start()
-UDVOZLO_CSATORNA_ID = int(os.environ.get("UDVOZLO_CSATORNA_ID", 0))
-TAVOZO_CSATORNA_ID = int(os.environ.get("TAVOZO_CSATORNA_ID", 0))
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
+UDVOZLO_CSATORNA_ID = int(os.environ.get("UDVOZLO_CSATORNA_ID", 1575209536279552111))
+TAVOZO_CSATORNA_ID = int(os.environ.get("TAVOZO_CSATORNA_ID", 1575209584295944282))
+TICKET_KATEGORIA_ID = int(os.environ.get("TICKET_KATEGORIA_ID", 1575207047421759719))
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 class TicketMegnyitasView(discord.ui.View):
     def __init__(self): super().__init__(timeout=None)
     @discord.ui.button(label="🎫 Ticket Nyitása", style=discord.ButtonStyle.green, custom_id="nyit_ticket")
     async def ticket_gomb(self, interaction: discord.Interaction, button: discord.ui.Button):
-        guild = interaction.guild
-        user = interaction.user
+        guild = interaction.guild; user = interaction.user
         existing_channel = discord.utils.get(guild.channels, name=f"ticket-{user.name.lower()}")
         if existing_channel:
             await interaction.response.send_message(f"⚠️ Már van nyitott ticketed: {existing_channel.mention}", ephemeral=True)
             return
         overwrites = {guild.default_role: discord.PermissionOverwrite(read_messages=False), user: discord.PermissionOverwrite(read_messages=True, send_messages=True, attach_files=True, read_message_history=True), guild.me: discord.PermissionOverwrite(read_messages=True, send_messages=True, manage_channels=True)}
-        ticket_csatorna = await guild.create_text_channel(name=f"ticket-{user.name}", overwrites=overwrites)
+        kat = bot.get_channel(TICKET_KATEGORIA_ID) if TICKET_KATEGORIA_ID != 0 else None
+        ticket_csatorna = await guild.create_text_channel(name=f"ticket-{user.name}", overwrites=overwrites, category=kat)
         embed = discord.Embed(title="🎫 Ticket Elindítva", description=f"Üdvözöllek {user.mention}! Kérlek írd le a problémádat.\n\nA lezárás gomb elküldi a mentést privátban, majd törli a csatornát.", color=discord.Color.blue())
         await ticket_csatorna.send(embed=embed, view=TicketLezarasView(user_id=user.id))
         await interaction.response.send_message(f"✅ Ticket létrehozva: {ticket_csatorna.mention}", ephemeral=True)
@@ -122,4 +122,7 @@ async def userinfo(interaction: discord.Interaction, tag: discord.Member = None)
 @bot.tree.error
 async def on_app_command_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
     if isinstance(error, app_commands.errors.MissingPermissions): await interaction.response.send_message("❌ Nincs jogosultságod!", ephemeral=True)
-if BOT_TOKEN: keep_alive(); bot.run(BOT_TOKEN)
+
+# IDE ÍRD BE A BOTOKENEDET A KÉT MACSKAKÖRÖM KÖZÉ!
+keep_alive()
+bot.run("MTEzNDU2Nzg5MDEyMzQ1Njc4OQ.G_ABCDE.EzEgyMintaToken")
