@@ -53,7 +53,7 @@ class TicketLezarasView(discord.ui.View):
         if target_user:
             try:
                 embed_dm = discord.Embed(title="🔒 Ticket Lezárva", description=f"A(z) **{guild.name}** szerveren lévő ticketed lezárult. Mellékelve találod a beszélgetés mentését.", color=discord.Color.orange())
-                await target_user.send(embed=embed_dm, file=transcript_file); dm_siker = True
+                await target_user.send(embed_dm, file=transcript_file); dm_siker = True
             except Exception: pass
         if dm_siker: await channel.send("💾 **Transcript sikeresen elküldve DM-ben!** Törlés 5 másodpercen belül...")
         else: await channel.send("⚠️ **Nem sikerült elküldeni privát üzenetben.** Törlés 5 másodpercen belül...")
@@ -65,7 +65,8 @@ async def on_ready():
     bot.add_view(TicketMegnyitasView()); bot.add_view(TicketLezarasView())
     try: await bot.tree.sync(); print("🔄 Parancsok szinkronizálva!")
     except Exception as e: print(f"❌ Hiba: {e}")
-    await bot.change_presence(activity=discord.Game(name="/help | U.S ARMY"))
+    # ITT LETT ÁTÍRVA A STÁTUSZ:
+    await bot.change_presence(activity=discord.Game(name="/help | Street Life RP"))
 
 @bot.event
 async def on_member_join(member):
@@ -139,4 +140,3 @@ async def serverinfo(interaction: discord.Interaction):
 async def userinfo(interaction: discord.Interaction, tag: discord.Member = None):
     t = tag or interaction.user; embed = discord.Embed(title=f"👤 {t.name} adatai", color=t.color)
     embed.add_field(name="ID", value=t.id).add_field(name="Regisztráció", value=t.created_at.strftime("%Y-%m-%d")).add_field(name="Csatlakozás", value=t.joined_at.strftime("%Y-%m-%d"))
-    embed.set_thumbnail(url=t.avatar.url if t.avatar else t.default_avatar.url)
