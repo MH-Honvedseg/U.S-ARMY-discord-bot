@@ -4,17 +4,31 @@ from discord import app_commands
 import asyncio
 import io
 import os
+from threading import Thread
+from flask import Flask
 
-# ==================== BEÁLLÍTÁSOK (KÖRNYEZETI VÁLTOZÓKBÓL) ====================
+# --- MINI WEBSZERVER A RENDER INGYENES CSOMAGJÁHOZ ---
+app = Flask('')
+@app.route('/')
+def home():
+    return "U.S ARMY Bot Online!"
+
+def run_web():
+    app.run(host='0.0.0.0', port=10000)
+
+def keep_alive():
+    t = Thread(target=run_web)
+    t.start()
+
+# ==================== BEÁLLÍTÁSOK ====================
 UDVOZLO_CSATORNA_ID = int(os.environ.get("UDVOZLO_CSATORNA_ID", 0))
 TAVOZO_CSATORNA_ID = int(os.environ.get("TAVOZO_CSATORNA_ID", 0))
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-# ==============================================================================
+# =====================================================
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# --- TICKET RENDSZER (Gombok és Interakciók) ---
 class TicketMegnyitasView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -54,7 +68,6 @@ class TicketLezarasView(discord.ui.View):
     @discord.ui.button(label="🔒 Ticket Lezárása & Mentés", style=discord.ButtonStyle.red, custom_id="zar_ticket")
     async def lezaras_gomb(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.defer()
-        
         channel = interaction.channel
         guild = interaction.guild
         
@@ -98,23 +111,18 @@ class TicketLezarasView(discord.ui.View):
         await asyncio.sleep(5)
         await channel.delete()
 
-# --- BOT ESEMÉNYEK ---
 @bot.event
 async def on_ready():
     print(f'✅ Bot sikeresen elindult mint: {bot.user.name}')
-    
     bot.add_view(TicketMegnyitasView())
     bot.add_view(TicketLezarasView())
-    
     try:
         synced = await bot.tree.sync()
         print(f"🔄 {len(synced)} Slash parancs sikeresen szinkronizálva!")
     except Exception as e:
         print(f"❌ Szinkronizációs hiba: {e}")
-
     await bot.change_presence(activity=discord.Game(name="/help | U.S ARMY Szerver Bot"))
 
-# --- AUTOMATIKUS ÜDVÖZLŐ ÉS BÚCSÚZÓ RENDSZER ---
 @bot.event
 async def on_member_join(member):
     if UDVOZLO_CSATORNA_ID == 0: return
@@ -142,7 +150,6 @@ async def on_member_remove(member):
         embed.set_thumbnail(url=member.avatar.url if member.avatar else member.default_avatar.url)
         await channel.send(embed=embed)
 
-# --- SLASH PARANCSOK ---
 @bot.tree.command(name="help", description="Megmutatja a bot összes parancsát.")
 async def help_command(interaction: discord.Interaction):
     embed = discord.Embed(title="🤖 U.S ARMY Bot Segítség", color=discord.Color.purple())
@@ -197,5 +204,3 @@ async def clear(interaction: discord.Interaction, darab: int):
 
 @bot.tree.command(name="ping", description="Bot válaszideje.")
 async def ping(interaction: discord.Interaction):
-    await interaction.response.send_message(f"🏓 Pong! `{round(bot.latency * 1000)}ms`")
-
